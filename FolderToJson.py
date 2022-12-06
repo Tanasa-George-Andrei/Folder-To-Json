@@ -49,7 +49,7 @@ def __main__():
     except LookupError:
         print("Not enough elements in the comand line")
         return
-    if len(sys.argv) > 3:
+    if len(sys.argv) > 3 and sys.argv[3] != "":
         extension_filters = str.split(sys.argv[3], " ")
     else:
         extension_filters = []
