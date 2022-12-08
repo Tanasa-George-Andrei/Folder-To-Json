@@ -1,9 +1,7 @@
 import os
-import sys
 import json
 import re 
-
-# C:/Users/George/AppData/Local/Programs/Python/Python310/python.exe "e:/University/_My Scripts/Python Project/FolderToJson.py" "E:\University\_My Scripts\Python\Lab 4" "E:\University\_My Scripts\a.json" ".py .txt"
+import argparse
 
 def file_extensio_stats(files, exclude_extension):
     result = {"Total number of files":0, "Sorted by extension":{}}
@@ -54,30 +52,32 @@ def __main__():
     exclude_extension = []
     exclude_file = []
     exclude_folder = []
+    dir_path = ""
+    json_path = ""
     try:
-        dir_path = sys.argv[1]
-        json_path = sys.argv[2]
-    except LookupError:
-        print("Not enough elements in the comand line")
+        parser = argparse.ArgumentParser(description="List of formmating options.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        parser.add_argument('dir_path', type=str)
+        parser.add_argument('json_path', type=str)
+        parser.add_argument("-rl","--recursion-limit",type=int,help="Limit the exploration depth",required=False)
+        parser.add_argument("-exex","--exclude-extension",nargs='+', type=str,help="Filters the statistics only to the given extensions",required=False)
+        parser.add_argument("-exfi","--exclude-files",nargs='+', type=str,help="Excludes the files out of the entire json file",required=False)
+        parser.add_argument("-exfo","--exclude-folders",nargs='+', type=str,help="Excludes the folder out of the entire json file",required=False)
+        for mode, value in parser.parse_args()._get_kwargs():
+            if mode == "dir_path":
+                dir_path = value
+            elif mode == "json_path":
+                json_path = value
+            elif mode == "recursion_limit" and value is not None:
+                recursion_level = value
+            elif mode == "exclude_extension" and value is not None:
+                exclude_extension = value
+            elif mode == "exclude_files" and value is not None:
+                exclude_file = value
+            elif mode == "exclude_folders"  and value is not None:
+                exclude_folder = value
+    except:
+        print("Invalid Arguments")
         return
-    if (len(sys.argv)) % 2 == 0:
-        print("Wrong number of arguments")
-        return 
-    for i in range(int((len(sys.argv)-3)/2)):
-        mode = sys.argv[3+i*2]
-        value = sys.argv[4+i*2]
-        if mode == "-rl":
-            recursion_level = int(value)
-        elif mode == "-exex":
-            for x in str.split(value, " "):
-                exclude_extension.append(x)
-        elif mode == "-exfi":
-            exclude_file.append(value)
-        elif mode == "-exfo":
-            exclude_folder.append(value)
-        else:
-            print("Invalid mode")
-            return
     if not os.path.isdir(dir_path):
         print("The search directory doesn't exist")
         return
